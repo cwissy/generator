@@ -20,7 +20,11 @@ The quickest way to get started with express is to utilize the executable `expre
 Create the app:
 
 ```bash
-$ express-generator-esmodules /tmp/foo && cd /tmp/foo
+$ mkdir foo && cd foo
+```
+
+```bash
+$ npx express-generator-esmodules .
 ```
 
 Install dependencies:
