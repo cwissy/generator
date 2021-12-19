@@ -49,6 +49,8 @@ program
   .version(VERSION, "    --version")
   .usage("[options] [dir]")
   .option("    --git", "add .gitignore")
+  .option("-p, --pg", "setup PostgreSQL database connection")
+  .option("-d, --dev", "create a development mode")
   .option("-f, --force", "force on non-empty directory")
   .parse(process.argv);
 
@@ -126,7 +128,7 @@ function copyTemplateMulti(fromDir, toDir, nameGlob) {
  * @param {string} dir
  */
 
-function createApplication(name, dir) {
+async function createApplication(name, dir) {
   console.log();
 
   // Package
@@ -141,8 +143,26 @@ function createApplication(name, dir) {
     dependencies: {
       debug: "~2.6.9",
       express: "~4.16.1"
-    }
+    },
+    devDependencies: {}
   };
+
+  if (program.pg) {
+    pkg.dependencies.pg = "^8.7.1";
+    if (program.dev) {
+      pkg.devDependencies.dotenv = "^10.0.0";
+      pkg.scripts["db:createusers"] =
+        "node -r dotenv/config ./db/scripts/users/createTable.js";
+    } else {
+      pkg.scripts["db:createusers"] = "node ./db/scripts/users/createTable.js";
+    }
+  }
+
+  if (program.dev) {
+    pkg.devDependencies.dotenv = "^10.0.0";
+    pkg.devDependencies.nodemon = "^2.0.15";
+    pkg.scripts.dev = "nodemon -r dotenv/config ./bin/www.js";
+  }
 
   // JavaScript
   var app = loadTemplate("js/app.js");
@@ -179,6 +199,19 @@ function createApplication(name, dir) {
   mkdir(dir, "public/js");
   mkdir(dir, "public/images");
   mkdir(dir, "public/css");
+
+  if (program.pg) {
+    await mkdir(dir, "models");
+    await mkdir(dir, "db");
+    await mkdir(dir, "db/scripts");
+    await mkdir(dir, "db/scripts/users");
+    copyTemplate("models/users.js", path.join(dir, "models", "users.js"));
+    copyTemplate("db/connection.js", path.join(dir, "db", "connection.js"));
+    copyTemplate(
+      "db/scripts/users/createTable.js",
+      path.join(dir, "db", "scripts", "users", "createTable.js")
+    );
+  }
 
   // copy css templates
   copyTemplateMulti("css", dir + "/public/css", "*.css");
