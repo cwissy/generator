@@ -7,12 +7,6 @@ A generator for [Express'](https://www.npmjs.com/package/express) which is updat
 [![Linux Build][travis-image]][travis-url]
 [![Windows Build][appveyor-image]][appveyor-url]
 
-## Installation
-
-```sh
-$ npm install -g express-generator
-```
-
 ## Quick Start
 
 The quickest way to get started with express is to utilize the executable `express(1)` to generate an application as shown below:
