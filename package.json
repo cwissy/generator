@@ -22,7 +22,7 @@
     "app",
     "api"
   ],
-  "repository": "expressjs/generator",
+  "repository": "cwissy/generator",
   "license": "MIT",
   "dependencies": {
     "commander": "2.15.1",
