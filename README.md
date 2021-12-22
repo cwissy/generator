@@ -41,6 +41,7 @@ This generator can also be further configured with the following command line fl
         --git            add .gitignore
     -p, --pg             setup PostgreSQL database connection
     -d, --dev            create a development mode
+    -t, --test           create a test environment
     -f, --force          force on non-empty directory
     -h, --help           output usage information
 

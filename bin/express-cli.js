@@ -51,6 +51,7 @@ program
   .option("    --git", "add .gitignore")
   .option("-p, --pg", "setup PostgreSQL database connection")
   .option("-d, --dev", "create a development mode")
+  .option("-t, --test", "create a test environment")
   .option("-f, --force", "force on non-empty directory")
   .parse(process.argv);
 
@@ -182,6 +183,10 @@ async function createApplication(name, dir) {
   app.locals.uses.push("logger('dev')");
   pkg.dependencies.morgan = "~1.9.1";
 
+  app.locals.modules.cors = "cors";
+  app.locals.uses.push("cors()");
+  pkg.dependencies.cors = "^2.8.5";
+
   // Body parsers
   app.locals.uses.push("express.json()");
   app.locals.uses.push("express.urlencoded({ extended: false })");
@@ -211,6 +216,14 @@ async function createApplication(name, dir) {
       "db/scripts/users/createTable.js",
       path.join(dir, "db", "scripts", "users", "createTable.js")
     );
+  }
+
+  if (program.test) {
+    copyTemplate("js/app.test.js", path.join(dir, "app.test.js"));
+    pkg.scripts.test =
+      "node --experimental-vm-modules node_modules/jest/bin/jest.js";
+    pkg.devDependencies.jest = "^27.4.5";
+    pkg.devDependencies.supertest = "^6.1.6";
   }
 
   // copy css templates
